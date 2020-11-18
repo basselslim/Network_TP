@@ -31,6 +31,7 @@ public class Server extends JFrame {
 
         JPanel pane1 = new JPanel();
         pane1.setLayout(new BoxLayout(pane1, BoxLayout.X_AXIS));
+        pane1.setSize(500, 80);
         portLabel = new JLabel("Port: ");
         portTextField = new JTextField();
         startButton = new JButton("Start Server");
