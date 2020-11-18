@@ -1,14 +1,22 @@
 package client;
 
-import java.io.*;
-import java.net.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Client {
+public class Client extends JFrame{
 
     private int port;
     private String host;
     private ClientThread clientThread;
-    private Socket socket;
+
+    //Elements graphiques
+    private JLabel portLabel;
+    private JTextField portTextField;
+    private JButton startButton;
+    private JTextArea serverLog;
 
     public Client(String host, int port){
         this.host = host;
@@ -16,18 +24,13 @@ public class Client {
     }
 
     public void start() {
-        try {
-            socket = new Socket(this.host, this.port);
-            clientThread = new ClientThread(socket);
-            clientThread.start();
-        } catch (IOException e) {
-            //handle error
-        }
+        clientThread = new ClientThread(this.host, this.port);
+        clientThread.run();
     }
 
     public static void main(String args[]) {
-
         Client client = new Client(args[0], new Integer(args[1]).intValue());
         client.start();
+        client.setVisible(true);
     }
 }
