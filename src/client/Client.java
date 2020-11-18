@@ -1,5 +1,6 @@
 package client;
 
+import server.Server;
 import server.ServerThread;
 
 public class Client {
@@ -7,6 +8,7 @@ public class Client {
     private int port;
     private String host;
     private ClientThread clientThread;
+    private Socket socket;
 
     public Client(String host, int port){
         this.host = host;
@@ -15,10 +17,16 @@ public class Client {
 
     public void start() {
         try {
-            mainThread = new ClientThread(socket);
-            mainThread.start();
+            clientThread = new ClientThread(socket);
+            clientThread.start();
         } catch (IOException e) {
             //handle error
         }
+    }
+
+    public static void main(String args[]) {
+
+        Client client = new Client(args[0], new Integer(args[1]).intValue());
+        client.start();
     }
 }

@@ -9,7 +9,7 @@ public class ClientThread extends Thread {
     private BufferedReader socIn;
     private PrintStream socOut;
 
-    ClientThread(Socket s) {
+    public ClientThread(Socket s) {
         this.clientSocket = s;
     }
 
