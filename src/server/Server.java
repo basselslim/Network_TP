@@ -73,7 +73,7 @@ public class Server extends JFrame {
 
     }
 
-    public void start(int port) {
+    public void start (int port) {
         startButton.setText("Stop Server");
         portTextField.setEditable(false);
         try {
@@ -88,18 +88,26 @@ public class Server extends JFrame {
     public void stop() {
         startButton.setText("Start Server");
         portTextField.setEditable(true);
-        //mainThread.kill();
+        mainThread.stop();
         synchronized(clients) {
             for(ClientThread client : clients) {
-                //client.kill();
+                client.stop();
             }
             clients.clear();
         }
+        writeLog("Server stopped");
     }
 
-    public void onAcceptClient(ClientThread client) {
+    public void onAcceptClient (ClientThread client) {
         clients.add(client);
         writeLog(client.toString());
+    }
+
+    public void onReceiveMessage (ClientThread client, String message) {
+        writeLog(client + " : " + message);
+        for (ClientThread c : clients) {
+            c.sendMessage(client + " : " + message);
+        }
     }
 
     public void writeLog (String s) {
