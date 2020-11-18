@@ -1,7 +1,7 @@
 package client;
 
-import server.Server;
-import server.ServerThread;
+import java.io.*;
+import java.net.*;
 
 public class Client {
 
