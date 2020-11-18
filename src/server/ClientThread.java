@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 public class ClientThread extends Thread {
 
-
     private Socket clientSocket;
     private PrintStream socOut;
     private BufferedReader socIn;

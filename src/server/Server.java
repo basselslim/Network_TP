@@ -1,6 +1,8 @@
 package server;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -31,10 +33,13 @@ public class Server extends JFrame {
 
         JPanel pane1 = new JPanel();
         pane1.setLayout(new BoxLayout(pane1, BoxLayout.X_AXIS));
-        pane1.setSize(500, 80);
+        pane1.setMaximumSize(new Dimension(500, 80));
+        pane1.setBorder(new EmptyBorder(0, 10, 0, 10));
         portLabel = new JLabel("Port: ");
         portTextField = new JTextField();
         startButton = new JButton("Start Server");
+        //getRootPane().setDefaultButton(startButton);
+        //startButton.requestFocus();
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,15 +50,11 @@ public class Server extends JFrame {
                             throw new NumberFormatException();
                         }
                         start(port);
-                        startButton.setText("Stop Server");
-                        //portTextField.setEditable(false);
                     } catch(NumberFormatException ex) {
-                        //write("Error: enter a port number between 1024 and 65635");
+                        portTextField.setText("???");
                     }
                 } else if(startButton.getText().equals("Stop Server")) {
-                    //stop();
-                    startButton.setText("Start Server");
-                    //portTextField.setEditable(true);
+                    stop();
                 }
             }
         });
@@ -61,24 +62,49 @@ public class Server extends JFrame {
         pane1.add(portTextField);
         pane1.add(startButton);
 
+        JPanel pane2 = new JPanel();
+        pane2.setLayout(new BoxLayout(pane2, BoxLayout.X_AXIS));
         serverLog = new JTextArea();
+        serverLog.setMargin(new Insets(10,10,10,10));
+        pane2.add(serverLog);
 
         add(pane1);
-        add(serverLog);
+        add(pane2);
 
     }
 
     public void start(int port) {
+        startButton.setText("Stop Server");
+        portTextField.setEditable(false);
         try {
             mainThread = new ServerThread(port, this);
             mainThread.start();
+            writeLog("Server started");
         } catch (IOException e) {
             //handle error
         }
     }
 
+    public void stop() {
+        startButton.setText("Start Server");
+        portTextField.setEditable(true);
+        //mainThread.kill();
+        synchronized(clients) {
+            for(ClientThread client : clients) {
+                //client.kill();
+            }
+            clients.clear();
+        }
+    }
+
     public void onAcceptClient(ClientThread client) {
         clients.add(client);
+        writeLog(client.toString());
+    }
+
+    public void writeLog (String s) {
+        serverLog.append(s);
+        serverLog.append("\n");
     }
 
     public static void main(String args[]) {
