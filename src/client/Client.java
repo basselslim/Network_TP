@@ -17,6 +17,7 @@ public class Client {
 
     public void start() {
         try {
+            socket = new Socket(this.host, this.port);
             clientThread = new ClientThread(socket);
             clientThread.start();
         } catch (IOException e) {
