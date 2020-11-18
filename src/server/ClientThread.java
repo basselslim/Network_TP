@@ -32,11 +32,16 @@ public class ClientThread extends Thread {
         } catch(IOException e) {
             //handle exception
         }
+        server.onDisconnectClient(this);
         stop();
     }
 
     public void sendMessage (String message) {
         socOut.println(message);
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
     }
 
 }

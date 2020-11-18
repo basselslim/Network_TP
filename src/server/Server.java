@@ -81,7 +81,7 @@ public class Server extends JFrame {
             mainThread.start();
             writeLog("Server started");
         } catch (IOException e) {
-            //handle error
+            e.printStackTrace();
         }
     }
 
@@ -100,13 +100,29 @@ public class Server extends JFrame {
 
     public void onAcceptClient (ClientThread client) {
         clients.add(client);
-        writeLog(client.toString());
+        String pseudo = "" + client.getClientSocket().getPort();
+        String message = pseudo + " joined the chat";
+        writeLog(message);
+        for (ClientThread c : clients) {
+            c.sendMessage(message);
+        }
+    }
+
+    public void onDisconnectClient (ClientThread client) {
+        clients.remove(client);
+        String pseudo = "" + client.getClientSocket().getPort();
+        String message = pseudo + " left the chat";
+        writeLog(message);
+        for (ClientThread c : clients) {
+            c.sendMessage(message);
+        }
     }
 
     public void onReceiveMessage (ClientThread client, String message) {
-        writeLog(client + " : " + message);
+        String pseudo = "" + client.getClientSocket().getPort();
+        writeLog(pseudo + " : " + message);
         for (ClientThread c : clients) {
-            c.sendMessage(client + " : " + message);
+            c.sendMessage(pseudo + " : " + message);
         }
     }
 
