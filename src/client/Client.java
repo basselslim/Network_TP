@@ -16,17 +16,13 @@ public class Client {
     }
 
     public void start() {
-        try {
             clientThread = new ClientThread(socket);
             clientThread.start();
-        } catch (IOException e) {
-            //handle error
-        }
     }
 
     public static void main(String args[]) {
 
-        Client client = new Client(args[0], new Integer(args[1]).intValue());
+        Client client = new Client(args[0], Integer.valueOf(args[1]));
         client.start();
     }
 }
