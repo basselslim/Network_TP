@@ -24,10 +24,24 @@ public class ClientThread extends Thread {
             System.err.println("Error while accessing socket");
         }
         server.onAcceptClient(this);
+        try {
+            String message;
+            while((message = socIn.readLine()) != null) {
+                server.onReceiveMessage(this, message);
+            }
+        } catch(IOException e) {
+            //handle exception
+        }
+        server.onDisconnectClient(this);
+        stop();
     }
 
     public void sendMessage (String message) {
         socOut.println(message);
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
     }
 
 }

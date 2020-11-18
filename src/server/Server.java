@@ -73,7 +73,7 @@ public class Server extends JFrame {
 
     }
 
-    public void start(int port) {
+    public void start (int port) {
         startButton.setText("Stop Server");
         portTextField.setEditable(false);
         try {
@@ -81,25 +81,49 @@ public class Server extends JFrame {
             mainThread.start();
             writeLog("Server started");
         } catch (IOException e) {
-            //handle error
+            e.printStackTrace();
         }
     }
 
     public void stop() {
         startButton.setText("Start Server");
         portTextField.setEditable(true);
-        //mainThread.kill();
+        mainThread.stop();
         synchronized(clients) {
             for(ClientThread client : clients) {
-                //client.kill();
+                client.stop();
             }
             clients.clear();
         }
+        writeLog("Server stopped");
     }
 
-    public void onAcceptClient(ClientThread client) {
+    public void onAcceptClient (ClientThread client) {
         clients.add(client);
-        writeLog(client.toString());
+        String pseudo = "" + client.getClientSocket().getPort();
+        String message = pseudo + " joined the chat";
+        writeLog(message);
+        for (ClientThread c : clients) {
+            c.sendMessage(message);
+        }
+    }
+
+    public void onDisconnectClient (ClientThread client) {
+        clients.remove(client);
+        String pseudo = "" + client.getClientSocket().getPort();
+        String message = pseudo + " left the chat";
+        writeLog(message);
+        for (ClientThread c : clients) {
+            c.sendMessage(message);
+        }
+    }
+
+    public void onReceiveMessage (ClientThread client, String message) {
+        String pseudo = "" + client.getClientSocket().getPort();
+        writeLog(pseudo + " : " + message);
+        for (ClientThread c : clients) {
+            c.sendMessage(pseudo + " : " + message);
+        }
     }
 
     public void writeLog (String s) {
