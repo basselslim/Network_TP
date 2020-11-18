@@ -1,6 +1,8 @@
 package server;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -31,7 +33,8 @@ public class Server extends JFrame {
 
         JPanel pane1 = new JPanel();
         pane1.setLayout(new BoxLayout(pane1, BoxLayout.X_AXIS));
-        pane1.setSize(500, 80);
+        pane1.setMaximumSize(new Dimension(500, 80));
+        pane1.setBorder(new EmptyBorder(0, 10, 0, 10));
         portLabel = new JLabel("Port: ");
         portTextField = new JTextField();
         startButton = new JButton("Start Server");
@@ -48,7 +51,7 @@ public class Server extends JFrame {
                         startButton.setText("Stop Server");
                         //portTextField.setEditable(false);
                     } catch(NumberFormatException ex) {
-                        //write("Error: enter a port number between 1024 and 65635");
+                        portTextField.setText("???");
                     }
                 } else if(startButton.getText().equals("Stop Server")) {
                     //stop();
