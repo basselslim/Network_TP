@@ -33,7 +33,16 @@ public class ClientThread extends Thread {
             //handle exception
         }
         server.onDisconnectClient(this);
-        stop();
+        end();
+    }
+
+    public void end () {
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.stop();
     }
 
     public void sendMessage (String message) {

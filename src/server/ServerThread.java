@@ -24,4 +24,13 @@ public class ServerThread extends Thread{
         }
     }
 
+    public void end () {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.stop();
+    }
+
 }

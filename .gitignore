@@ -26,3 +26,4 @@ hs_err_pid*
 *.xml
 *.iml
 classes/
+.idea/misc.xml

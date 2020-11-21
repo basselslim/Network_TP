@@ -8,11 +8,13 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Server extends JFrame {
 
     private ServerThread mainThread;
     private LinkedList<ClientThread> clients;
+    private final String pathToHistory = "chat_history.txt";
 
     //Elements graphiques
     private JLabel portLabel;
@@ -74,6 +76,7 @@ public class Server extends JFrame {
     }
 
     public void start (int port) {
+        serverLog.setText("");
         startButton.setText("Stop Server");
         portTextField.setEditable(false);
         try {
@@ -83,18 +86,17 @@ public class Server extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        writeLog(getHistory());
     }
 
     public void stop() {
         startButton.setText("Start Server");
         portTextField.setEditable(true);
-        mainThread.stop();
-        synchronized(clients) {
-            for(ClientThread client : clients) {
-                client.stop();
-            }
-            clients.clear();
+        mainThread.end();
+        for(ClientThread client : clients) {
+            client.end();
         }
+        clients.clear();
         writeLog("Server stopped");
     }
 
@@ -103,6 +105,7 @@ public class Server extends JFrame {
         String pseudo = "" + client.getClientSocket().getPort();
         String message = pseudo + " joined the chat";
         writeLog(message);
+        addToHistory(message);
         for (ClientThread c : clients) {
             c.sendMessage(message);
         }
@@ -113,22 +116,55 @@ public class Server extends JFrame {
         String pseudo = "" + client.getClientSocket().getPort();
         String message = pseudo + " left the chat";
         writeLog(message);
+        addToHistory(message);
         for (ClientThread c : clients) {
             c.sendMessage(message);
         }
     }
 
-    public void onReceiveMessage (ClientThread client, String message) {
+    public void onReceiveMessage (ClientThread client, String s) {
         String pseudo = "" + client.getClientSocket().getPort();
-        writeLog(pseudo + " : " + message);
+        String message = pseudo + " : " + s;
+        writeLog(message);
+        addToHistory(message);
         for (ClientThread c : clients) {
-            c.sendMessage(pseudo + " : " + message);
+            c.sendMessage(message);
         }
     }
 
     public void writeLog (String s) {
         serverLog.append(s);
-        serverLog.append("\n");
+        if (s.charAt(s.length()-1) != '\n') {
+            serverLog.append("\n");
+        }
+    }
+
+    public void addToHistory(String s) {
+        try {
+            File history = new File(pathToHistory);
+            history.createNewFile();
+            PrintStream historyStream = new PrintStream(new FileOutputStream(history, true), true);
+            historyStream.append(s + "\n");
+            historyStream.close();
+        } catch (IOException e) {
+            writeLog("Error while creating or accessing the history");
+        }
+    }
+
+    public String getHistory() {
+        String res = "";
+        try {
+            File history = new File(pathToHistory);
+            history.createNewFile();
+            Scanner reader = new Scanner(history);
+            while (reader.hasNextLine()) {
+                res += reader.nextLine() + "\n";
+            }
+            reader.close();
+        } catch (IOException e) {
+            writeLog("Error while accessing the history");
+        }
+        return res;
     }
 
     public static void main(String args[]) {
