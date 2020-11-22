@@ -1,47 +1,36 @@
 package client;
 
 import java.io.*;
-import java.net.*;
 
 public class ClientThread extends Thread {
+    private ConnectionListener listener;
+    private BufferedReader reader;
+    private boolean state;
 
-    private Socket clientSocket;
-    private BufferedReader socIn;
-    private PrintStream socOut;
-    private BufferedReader stdIn;
+    public ClientThread(ConnectionListener listener, BufferedReader reader) {
+        this.listener = listener;
+        this.reader = reader;
+    }
 
-    public ClientThread(String host, int port) {
-        try {
-            this.clientSocket = new Socket(host, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public synchronized boolean isRunning() {
+        return state;
+    }
+
+    public synchronized void kill() {
+        state = false;
     }
 
     public void run() {
+        state = true;
         try {
-            socIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            socOut= new PrintStream(clientSocket.getOutputStream());
-            stdIn = new BufferedReader(new InputStreamReader(System.in));
-
-            String line;
-            while (true) {
-                line=stdIn.readLine();
-                if (line.equals(".")) break;
-                socOut.println(line);
-                System.out.println("echo: " + socIn.readLine());
+            String message;
+            while((message = reader.readLine()) != null) {
+                listener.onReceiveMessage(message);
             }
-
-            socOut.close();
-            socIn.close();
-            stdIn.close();
-            clientSocket.close();
-
-        } catch (Exception e) {
-            System.err.println("Error in EchoServer:" + e);
+            listener.onConnectionLost("Connection lost...");
+        } catch (IOException e) {
+            listener.onConnectionLost("Client disconnected");
         }
-
-
+        kill();
     }
-
 }
