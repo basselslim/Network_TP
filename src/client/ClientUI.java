@@ -83,7 +83,10 @@ public class ClientUI extends JFrame implements ConnectionListener{
                         }
                         client.start(pseudo, host, port);
                         startButton.setText("Leave Chat");
-                        //writeMessage(pseudo + " joined the chat");
+                        pseudoTextField.setEditable(false);
+                        hostTextField.setEditable(false);
+                        portTextField.setEditable(false);
+                        writeMessage(pseudo + " joined the chat");
                     } catch(NumberFormatException ex) {
                         writeMessage("IP address or Port are incorrect");
                         hostTextField.setText("???");
@@ -92,6 +95,11 @@ public class ClientUI extends JFrame implements ConnectionListener{
                         writeMessage("Connection to " + hostTextField.getText() + " on port " + Integer.valueOf(portTextField.getText()) + " impossible");
                     }
                 } else if(startButton.getText().equals("Leave Chat")) {
+                    client.stop();
+                    startButton.setText("Join Chat");
+                    pseudoTextField.setEditable(true);
+                    hostTextField.setEditable(true);
+                    portTextField.setEditable(true);
                     onConnectionLost(pseudoTextField.getText() + " left the chat.");
                 }
             }
@@ -136,9 +144,9 @@ public class ClientUI extends JFrame implements ConnectionListener{
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(client.isConnectionStarted() && !chatMessage.getText().isEmpty()) {
-                    client.writeMessage(chatMessage.getText());
-                    chatMessage.setText("");
+                if(client.isConnectionStarted() && !messageField.getText().isEmpty()) {
+                    client.writeMessage(messageField.getText());
+                    messageField.setText("");
                 }
             }
         });
@@ -168,7 +176,7 @@ public class ClientUI extends JFrame implements ConnectionListener{
 
     @Override
     public void onConnectionLost(String message){
-        startButton.setText("Join the chat");
+        startButton.setText("Join Chat");
         pseudoTextField.setEditable(true);
         hostTextField.setEditable(true);
         portTextField.setEditable(true);
