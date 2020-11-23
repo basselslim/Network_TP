@@ -2,7 +2,6 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.util.LinkedList;
 
 public class ClientThread extends Thread {
 
@@ -10,6 +9,7 @@ public class ClientThread extends Thread {
     private PrintStream socOut;
     private BufferedReader socIn;
     private Server server;
+    private String pseudo;
 
     ClientThread(Socket s, Server serv) {
         this.clientSocket = s;
@@ -22,6 +22,11 @@ public class ClientThread extends Thread {
             socOut = new PrintStream(clientSocket.getOutputStream());
         } catch (IOException e) {
             System.err.println("Error while accessing socket");
+        }
+        try {
+            pseudo = socIn.readLine();
+        } catch (IOException e) {
+            //handle exception
         }
         server.onAcceptClient(this);
         try {
@@ -51,6 +56,10 @@ public class ClientThread extends Thread {
 
     public Socket getClientSocket() {
         return clientSocket;
+    }
+
+    public String getPseudo() {
+        return pseudo;
     }
 
 }

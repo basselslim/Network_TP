@@ -101,17 +101,22 @@ public class ClientUI extends JFrame implements ConnectionListener{
         centralPanel = new JPanel();
         centralPanel.setLayout(new BoxLayout(centralPanel, BoxLayout.X_AXIS));
         //bottomPanel.setMaximumSize(new Dimension(500, 80));
-        centralPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
+        //centralPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         //Message Area
         chatMessage = new JTextArea();
         chatMessage.setMargin(new Insets(10,10,10,10));
-        centralPanel.add(chatMessage);
+        chatMessage.setEditable(false);
+
+        //Scroll
+        JScrollPane scroll = new JScrollPane(chatMessage);
+        scroll.setBorder(new EmptyBorder(0,0,0,0));
+        centralPanel.add(scroll);
 
         //Bottom Panel
         bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
-        //bottomPanel.setMaximumSize(new Dimension(500, 80));
+        bottomPanel.setMaximumSize(new Dimension(500, 160));
         bottomPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         // Message Text Field
@@ -136,9 +141,9 @@ public class ClientUI extends JFrame implements ConnectionListener{
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(client.isConnectionStarted() && !chatMessage.getText().isEmpty()) {
-                    client.writeMessage(chatMessage.getText());
-                    chatMessage.setText("");
+                if(client.isConnectionStarted() && !messageField.getText().isEmpty()) {
+                    client.writeMessage(messageField.getText());
+                    messageField.setText("");
                 }
             }
         });

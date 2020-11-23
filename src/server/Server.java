@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.*;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -68,7 +67,10 @@ public class Server extends JFrame {
         pane2.setLayout(new BoxLayout(pane2, BoxLayout.X_AXIS));
         serverLog = new JTextArea();
         serverLog.setMargin(new Insets(10,10,10,10));
-        pane2.add(serverLog);
+        serverLog.setEditable(false);
+        JScrollPane scroll = new JScrollPane(serverLog);
+        scroll.setBorder(new EmptyBorder(0,0,0,0));
+        pane2.add(scroll);
 
         add(pane1);
         add(pane2);
@@ -102,7 +104,8 @@ public class Server extends JFrame {
 
     public void onAcceptClient (ClientThread client) {
         clients.add(client);
-        String pseudo = "" + client.getClientSocket().getPort();
+        client.sendMessage(getHistory());
+        String pseudo = client.getPseudo();
         String message = pseudo + " joined the chat";
         writeLog(message);
         addToHistory(message);
@@ -113,7 +116,7 @@ public class Server extends JFrame {
 
     public void onDisconnectClient (ClientThread client) {
         clients.remove(client);
-        String pseudo = "" + client.getClientSocket().getPort();
+        String pseudo = client.getPseudo();
         String message = pseudo + " left the chat";
         writeLog(message);
         addToHistory(message);
@@ -123,7 +126,7 @@ public class Server extends JFrame {
     }
 
     public void onReceiveMessage (ClientThread client, String s) {
-        String pseudo = "" + client.getClientSocket().getPort();
+        String pseudo = client.getPseudo();
         String message = pseudo + " : " + s;
         writeLog(message);
         addToHistory(message);
