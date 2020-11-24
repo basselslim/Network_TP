@@ -9,25 +9,45 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
-import client.ConnectionListener;
 import client.Client;
 
-public class ClientUI extends JFrame implements ConnectionListener{
+/**
+ * User interface for the client
+ * @author Bassel Slim & Clément Parret
+ */
+public class ClientUI extends JFrame {
+
     //Graphical Elements
+    /**Top panel*/
     private JPanel topPanel;
+    /**Central panel*/
     private JPanel centralPanel;
+    /**Bottom panel*/
     private JPanel bottomPanel;
+    /**Label for the pseudo*/
     private JLabel pseudoLabel;
+    /**Text input for the pseudo*/
     private JTextField pseudoTextField;
+    /**Label for the host*/
     private JLabel hostLabel;
+    /**Text input for the host*/
     private JTextField hostTextField;
+    /**Label for the port*/
     private JLabel portLabel;
+    /**Text input for the port*/
     private JTextField portTextField;
+    /**Button to connect to or disconnect from the server*/
     private JButton startButton;
+    /**Text area to display messages*/
     private JTextArea chatMessage;
+    /**Button to send a message*/
     private JButton sendButton;
+    /**Text input in which to type messages*/
     private JTextField messageField;
 
+    /**
+     * Instantiates the user interface
+     */
     public ClientUI(){
 
         Client client = new Client(this);
@@ -162,6 +182,10 @@ public class ClientUI extends JFrame implements ConnectionListener{
         this.add(bottomPanel);
     }
 
+    /**
+     * Writes a message in the dedicated text area
+     * @param message The message to display
+     */
     public synchronized void writeMessage(String message) {
         synchronized(chatMessage) {
             while(message.endsWith("\n")) {
@@ -174,24 +198,24 @@ public class ClientUI extends JFrame implements ConnectionListener{
         }
     }
 
-    @Override
+    /**
+     * Manages the reception of a message
+     * @param message The message that was received
+     */
     public void onReceiveMessage(String message){
         writeMessage(message);
     }
 
-    @Override
+    /**
+     * Manages the disconnection from the server
+     * @param message The message to display
+     */
     public void onConnectionLost(String message){
         startButton.setText("Join Chat");
         pseudoTextField.setEditable(true);
         hostTextField.setEditable(true);
         portTextField.setEditable(true);
         writeMessage(message);
-    }
-
-    public synchronized void clear() {
-        synchronized(chatMessage) {
-            chatMessage.setText("");
-        }
     }
 
     public static void main(String args[]) {

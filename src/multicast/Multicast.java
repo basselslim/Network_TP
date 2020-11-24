@@ -15,24 +15,46 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+/**
+ * User interface for multicast chat
+ * @author Bassel Slim & Clément Parret
+ */
 public class Multicast extends JFrame {
 
+    /**Socket connected to the chat*/
     private MulticastSocket socket;
+    /**Thread listening for new messages*/
     private MulticastThread mainThread;
+    /**Port of the multicast chat*/
     private int port;
+    /**IP address of the multicast chat*/
     private InetAddress address;
 
+    //Elements graphiques
+    /**Label for the pseudo*/
     private JLabel pseudoLabel;
+    /**Text input for the pseudo*/
     private JTextField pseudoTextField;
+    /**Label for the host*/
     private JLabel hostLabel;
+    /**Text input for the host*/
     private JTextField hostTextField;
+    /**Label for the port*/
     private JLabel portLabel;
+    /**Text input for the port*/
     private JTextField portTextField;
+    /**Button to join or leave the chat*/
     private JButton startButton;
+    /**Text area displaying the chat*/
     private JTextArea chatMessage;
+    /**Button to send a message*/
     private JButton sendButton;
+    /**Text input in which to type messages*/
     private JTextField messageField;
 
+    /**
+     * Instantiates the user interface for the multicast chat
+     */
     public Multicast() {
 
         mainThread = null;
@@ -142,6 +164,10 @@ public class Multicast extends JFrame {
 
     }
 
+    /**
+     * Writes a message in the dedicated text area
+     * @param message The message to display
+     */
     public synchronized void writeMessage(String message) {
         synchronized(chatMessage) {
             while(message.endsWith("\n")) {
@@ -154,6 +180,9 @@ public class Multicast extends JFrame {
         }
     }
 
+    /**
+     * Initiates the connection to the chat
+     */
     public void joinChat() {
         try {
             String pseudo = pseudoTextField.getText();
@@ -183,6 +212,9 @@ public class Multicast extends JFrame {
         }
     }
 
+    /**
+     * Manages the leaving of the chat
+     */
     public void leaveChat() {
         startButton.setText("Join Chat");
         pseudoTextField.setEditable(true);
@@ -194,6 +226,10 @@ public class Multicast extends JFrame {
         chatMessage.setText("");
     }
 
+    /**
+     * Sends a message to the chat
+     * @param message The message to send
+     */
     public void sendMessage(String message) {
         try {
             DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), address, port);
@@ -203,7 +239,11 @@ public class Multicast extends JFrame {
         }
     }
 
-    public void onReceiveMessage(MulticastThread thread, String message) {
+    /**
+     * Manages the reception of a message
+     * @param message The message that was received
+     */
+    public void onReceiveMessage(String message) {
         writeMessage(message);
     }
 

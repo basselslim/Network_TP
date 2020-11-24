@@ -9,18 +9,32 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.Scanner;
 
+/**
+ * Chat server with user interface
+ * @author Bassel Slim & Clément Parret
+ */
 public class Server extends JFrame {
 
+    /**Thread managing new connections to the chat server*/
     private ServerThread mainThread;
+    /**List of threads managing connections to clients*/
     private LinkedList<ClientThread> clients;
+    /**Path to the file containing the chat history*/
     private final String pathToHistory = "chat_history.txt";
 
     //Elements graphiques
+    /**Label for the port text input*/
     private JLabel portLabel;
+    /**Text input for the port*/
     private JTextField portTextField;
+    /**Button for starting or stopping the server*/
     private JButton startButton;
+    /**Text area that displays the server's logs*/
     private JTextArea serverLog;
 
+    /**
+     * Instantiates the chat server and its user interface
+     */
     public Server () {
 
         clients = new LinkedList<>();
@@ -77,6 +91,10 @@ public class Server extends JFrame {
 
     }
 
+    /**
+     * Starts the server on a given port
+     * @param port The port on which the server listens
+     */
     public void start (int port) {
         serverLog.setText("");
         startButton.setText("Stop Server");
@@ -91,6 +109,9 @@ public class Server extends JFrame {
         writeLog(getHistory());
     }
 
+    /**
+     * Stops the server after terminating all its threads
+     */
     public void stop() {
         startButton.setText("Start Server");
         portTextField.setEditable(true);
@@ -102,6 +123,10 @@ public class Server extends JFrame {
         writeLog("Server stopped");
     }
 
+    /**
+     * Manages the connection of a new client to the chat server
+     * @param client The thread that was created for the new client
+     */
     public void onAcceptClient (ClientThread client) {
         clients.add(client);
         client.sendMessage(getHistory());
@@ -114,6 +139,10 @@ public class Server extends JFrame {
         }
     }
 
+    /**
+     * Manages the disconnection of a client
+     * @param client The thread that managed the disconnected client
+     */
     public void onDisconnectClient (ClientThread client) {
         clients.remove(client);
         String pseudo = client.getPseudo();
@@ -125,6 +154,11 @@ public class Server extends JFrame {
         }
     }
 
+    /**
+     * Manages the reception of a message from one of the clients
+     * @param client The client that emitted the message
+     * @param s The content of the message
+     */
     public void onReceiveMessage (ClientThread client, String s) {
         String pseudo = client.getPseudo();
         String message = pseudo + " : " + s;
@@ -135,6 +169,10 @@ public class Server extends JFrame {
         }
     }
 
+    /**
+     * Writes text in the textArea displaying server logs
+     * @param s The text to write
+     */
     public void writeLog (String s) {
         serverLog.append(s);
         if (s.charAt(s.length()-1) != '\n') {
@@ -142,6 +180,10 @@ public class Server extends JFrame {
         }
     }
 
+    /**
+     * Adds text to the history file
+     * @param s The text to add to the history
+     */
     public void addToHistory(String s) {
         try {
             File history = new File(pathToHistory);
@@ -154,6 +196,10 @@ public class Server extends JFrame {
         }
     }
 
+    /**
+     * Opens the chat history file and returns its content as a String
+     * @return The content of the chat history file
+     */
     public String getHistory() {
         String res = "";
         try {
